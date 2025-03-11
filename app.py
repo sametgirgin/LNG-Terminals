@@ -79,12 +79,5 @@ if data_loaded:
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("No terminals match the selected filters.")
-
-    # Display filtered data table
-    st.subheader("Filtered Terminals Data")
-    if not filtered_df.empty:
-        st.dataframe(filtered_df)
-    else:
-        st.write("No data to display.")
 else:
     st.warning("Please ensure the Excel file 'LNG-Terminals-2024-01 GEM-GGIT-.xlsx' is in the same directory as the app.") 
