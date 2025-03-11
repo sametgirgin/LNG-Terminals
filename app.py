@@ -64,7 +64,7 @@ if data_loaded:
                               lat="Latitude", 
                               lon="Longitude",
                               hover_name="TerminalName",
-                              hover_data=["Capacity", "CapacityUnits", "Status", "Owner"],
+                              hover_data=["State/Province", "Country", "Capacity", "CapacityUnits", "Status", "Owner","Parent","CapacityInMtpa", "CapacityInBcm","Wiki"],
                               color="Status",
                               zoom=1,
                               height=600)
