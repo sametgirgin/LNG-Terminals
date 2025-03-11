@@ -9,9 +9,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# Add title and description
-st.title("🚢 LNG Terminals Map")
-st.markdown("Interactive map showing LNG terminals worldwide with filtering capabilities.")
+# Create two columns for the header
+left_col, right_col = st.columns([4, 1])
+
+# Add title and logo
+with left_col:
+    st.title("🚢 LNG Terminals Map")
+    st.markdown("Interactive map showing LNG terminals worldwide with filtering capabilities.")
+
+with right_col:
+    # You can replace 'logo.png' with your actual logo file
+    st.image("logo.png", width=150)
 
 # Function to load and process data
 @st.cache_data
