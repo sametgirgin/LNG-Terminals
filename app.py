@@ -5,12 +5,12 @@ import plotly.express as px
 # Set page config
 st.set_page_config(
     page_title="LNG Terminals Map",
-    page_icon="🗺️",
+    page_icon="🚢",
     layout="wide"
 )
 
 # Add title and description
-st.title("🗺️ LNG Terminals Map")
+st.title("🚢 LNG Terminals Map")
 st.markdown("Interactive map showing LNG terminals worldwide with filtering capabilities.")
 
 # Function to load and process data
