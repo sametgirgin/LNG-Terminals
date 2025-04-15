@@ -4,22 +4,27 @@ import plotly.express as px
 
 # Set page config
 st.set_page_config(
-    page_title="LNG Terminals Map",
-    page_icon="🚢",
+    page_title="European Gas Report",
+    page_icon="🌍",
     layout="wide"
 )
 
 # Create two columns for the header
 left_col, right_col = st.columns([4, 1])
 
-# Add title and logo
+# Add title, subtitle, and logo
 with left_col:
-    st.title("🚢 LNG Terminals Map")
-    st.markdown("Interactive map showing LNG terminals worldwide with filtering capabilities.")
+    st.markdown(
+        """
+        <h1 style="color: #007BFF; margin: 0;">Sustainable Energy Analytics</h1>
+        <h2 style="color: #007BFF; margin: 0;">European Gas Report</h2>
+        """,
+        unsafe_allow_html=True
+    )
 
 with right_col:
-    # You can replace 'logo.png' with your actual logo file
-    st.image("logo.png", width=150)
+    # Display the logo
+    st.image("logo.png", width=50)  # Adjust the width as needed
 
 # Function to load and process data
 @st.cache_data
