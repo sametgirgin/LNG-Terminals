@@ -127,25 +127,11 @@ if data_loaded:
         
         # Add a container with custom styling for the about us text
         with st.container():
-            st.markdown("""
-            <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; text-align: justify;">
-            <p style="font-size: 16px; line-height: 1.6;">
-            Welcome to Sustainable Energy Analytics, your go-to source for insightful analysis and the latest developments 
-            in the sustainable energy world. Our mission is to empower individuals, businesses, and policymakers with the 
-            knowledge they need to make informed decisions for a sustainable future.
-            </p>
-            <p style="font-size: 16px; line-height: 1.6;">
-            At Sustainable Energy Analytics, we cover a wide range of topics, including solar, wind, hydro, and geothermal 
-            energy, as well as emerging technologies and innovative solutions driving the transition to a greener planet.
-            </p>
-            <p style="font-size: 16px; line-height: 1.6;">
-            Our team of experts is dedicated to providing accurate data, in-depth research, and expert commentary to help 
-            you stay ahead in the rapidly evolving energy landscape.
-            </p>
-            <p style="font-size: 16px; line-height: 1.6;">
-            Join us on our journey towards a cleaner, more sustainable world. Together, we can make a difference.
-            </p>
-            </div>
-            """, unsafe_allow_html=True)
+            # Read the Markdown content from the file
+            with open("richtext_converted_to_markdown.md", "r") as file:
+                about_us_content = file.read()
+            
+            # Display the Markdown content
+            st.markdown(about_us_content, unsafe_allow_html=True)
 else:
     st.warning("Please ensure the Excel file 'LNG-Terminals-2024-01 GEM-GGIT-.xlsx' is in the same directory as the app.")
