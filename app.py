@@ -4,7 +4,7 @@ import plotly.express as px
 
 # Set page config
 st.set_page_config(
-    page_title="European Gas Report",
+    page_title="Global LNG Report",
     page_icon="🌍",
     layout="wide"
 )
