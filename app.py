@@ -107,26 +107,16 @@ if data_loaded:
             st.warning("No terminals match the selected filters.")
             
     with tab2:
-        st.header("📚 Definitions and Terminology")
-        st.markdown("This section provides definitions and explanations of terms used in the dataset.")
+        st.header("📚 # LNG Terminal Terminologies")
+        # Add a container with custom styling for the about us text
+        with st.container():
+            # Read the Markdown content from the file
+            with open("terminologies.md", "r") as file:
+                about_us_content = file.read()
+            
+            # Display the Markdown content
+            st.markdown(about_us_content, unsafe_allow_html=True)
         
-        # Display definitions with better formatting
-        if not definitions_df.empty:
-            # Add a search box for definitions
-            search_term = st.text_input("🔍 Search definitions", "")
-            
-            if search_term:
-                # Filter definitions based on search term
-                filtered_definitions = definitions_df[
-                    definitions_df.apply(lambda x: x.astype(str).str.contains(search_term, case=False)).any(axis=1)
-                ]
-            else:
-                filtered_definitions = definitions_df
-            
-            # Display definitions in an expandable format
-            for idx, row in filtered_definitions.iterrows():
-                with st.expander(f"{row.iloc[0]}", expanded=False):
-                    st.write(row.iloc[1])
     with tab3:
         st.header("ℹ️ About Us")
         
