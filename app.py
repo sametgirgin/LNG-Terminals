@@ -69,6 +69,9 @@ if data_loaded:
         owner_options = ['All'] + sorted(df['Owner'].unique().tolist())
         selected_owner = st.sidebar.selectbox('Owner', owner_options)
 
+        country_options = ['All'] + sorted(df['Country'].unique().tolist())  # Add country filter
+        selected_country = st.sidebar.selectbox('Country', country_options)
+
         # Filter the data
         filtered_df = df.copy()
         if selected_facility != 'All':
@@ -77,6 +80,8 @@ if data_loaded:
             filtered_df = filtered_df[filtered_df['Status'] == selected_status]
         if selected_owner != 'All':
             filtered_df = filtered_df[filtered_df['Owner'] == selected_owner]
+        if selected_country != 'All':  # Apply country filter
+            filtered_df = filtered_df[filtered_df['Country'] == selected_country]
 
         # Create the Plotly map
         if not filtered_df.empty:
