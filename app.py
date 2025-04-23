@@ -107,7 +107,7 @@ if data_loaded:
             st.warning("No terminals match the selected filters.")
             
     with tab2:
-        st.header("📚 # LNG Terminal Terminologies")
+        st.header("📚LNG Terminal Terminologies")
         # Add a container with custom styling for the about us text
         with st.container():
             # Read the Markdown content from the file
