@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
 
 # Set page config
 st.set_page_config(
@@ -57,7 +59,18 @@ def load_buyer_seller_data():
     # Extract unique countries for geocoding
     countries = set(deals_df['Seller_Country'].unique()).union(deals_df['Buyer_Country'].unique())
     
-    return deals_df
+    # Geocode countries to get their latitudes and longitudes
+    geolocator = Nominatim(user_agent="lng_app")
+    country_coords = {}
+    for country in countries:
+        try:
+            location = geolocator.geocode(country, timeout=10)
+            if location:
+                country_coords[country] = (location.latitude, location.longitude)
+        except GeocoderTimedOut:
+            st.warning(f"Geocoding timed out for {country}.")
+    
+    return deals_df, country_coords
 
 # Load the data
 try:
@@ -69,7 +82,7 @@ except Exception as e:
 
 # Load the buyer and seller data
 try:
-    deals_df = load_buyer_seller_data()
+    deals_df, country_coords = load_buyer_seller_data()
     buyer_seller_data_loaded = True
 except Exception as e:
     st.error(f"Error loading buyer and seller data: {str(e)}")
