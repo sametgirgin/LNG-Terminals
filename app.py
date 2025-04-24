@@ -59,6 +59,16 @@ def load_buyer_seller_data():
     
     return deals_df
 
+# Load the Natural Gas LNG Import Excel file
+@st.cache_data
+def load_lng_import_data():
+    return pd.read_excel("Natural_Gas_LNG_Import.xlsx")
+
+# Load the Natural Gas LNG Export Excel file
+@st.cache_data
+def load_lng_export_data():
+    return pd.read_excel("Natural_Gas_LNG_Export.xlsx")
+
 # Load the data
 try:
     df, definitions_df = load_data()
@@ -75,13 +85,36 @@ except Exception as e:
     st.error(f"Error loading buyer and seller data: {str(e)}")
     buyer_seller_data_loaded = False
 
-if data_loaded and buyer_seller_data_loaded:
+# Load the LNG import data
+try:
+    lng_import_df = load_lng_import_data()
+    lng_import_data_loaded = True
+except Exception as e:
+    st.error(f"Error loading LNG import data: {str(e)}")
+    lng_import_data_loaded = False
+
+# Load the LNG export data
+try:
+    lng_export_df = load_lng_export_data()
+    lng_export_data_loaded = True
+except Exception as e:
+    st.error(f"Error loading LNG export data: {str(e)}")
+    lng_export_data_loaded = False
+
+if data_loaded and buyer_seller_data_loaded and lng_import_data_loaded and lng_export_data_loaded:
     # Create tabs for different views
-    tab1, tab2, tab3, tab4 = st.tabs(["📍 Map View", "📚 LNG Terminologies","🌍 Long-Term LNG Deals Map", "ℹ️ About Us"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "📍 LNG Terminal Map View", 
+        "📚 LNG Terminologies", 
+        "🌍 Long-Term LNG Deals Map", 
+        "📈 LNG Import Trends", 
+        "📈 LNG Export Trends",
+        "ℹ️ About Us"
+    ])
     
     with tab1:
         # Sidebar filters
-        st.sidebar.header("Filters")
+        st.sidebar.header("LNG Terminal Map Filters")
 
         # Create filters
         facility_types = ['All'] + sorted(df['FacilityType'].unique().tolist())
@@ -90,8 +123,9 @@ if data_loaded and buyer_seller_data_loaded:
         status_options = ['All'] + sorted(df['Status'].unique().tolist())
         selected_status = st.sidebar.selectbox('Status', status_options)
 
-        owner_options = ['All'] + sorted(df['Owner'].unique().tolist())
-        selected_owner = st.sidebar.selectbox('Owner', owner_options)
+        # Update the filter to use 'Owner Company' instead of 'Owner'
+        owner_company_options = ['All'] + sorted(df['Owner Company'].unique().tolist())
+        selected_owner_company = st.sidebar.selectbox('Owner Company', owner_company_options)
 
         country_options = ['All'] + sorted(df['Country'].unique().tolist())  # Add country filter
         selected_country = st.sidebar.selectbox('Country', country_options)
@@ -102,8 +136,8 @@ if data_loaded and buyer_seller_data_loaded:
             filtered_df = filtered_df[filtered_df['FacilityType'] == selected_facility]
         if selected_status != 'All':
             filtered_df = filtered_df[filtered_df['Status'] == selected_status]
-        if selected_owner != 'All':
-            filtered_df = filtered_df[filtered_df['Owner'] == selected_owner]
+        if selected_owner_company != 'All':  # Apply the 'Owner Company' filter
+            filtered_df = filtered_df[filtered_df['Owner Company'] == selected_owner_company]
         if selected_country != 'All':  # Apply country filter
             filtered_df = filtered_df[filtered_df['Country'] == selected_country]
 
@@ -124,7 +158,6 @@ if data_loaded and buyer_seller_data_loaded:
                 margin={"r":0,"t":0,"l":0,"b":0}
             )
             fig.update_traces(marker=dict(size=8))
-
             # Display the map
             st.plotly_chart(fig, use_container_width=True)
         else:
@@ -232,7 +265,105 @@ if data_loaded and buyer_seller_data_loaded:
             st.dataframe(filtered_deals)    
                
     with tab4:
-        st.header("ℹ️ About Us")
+        # Reshape the data
+        if 'Country/Area' in lng_import_df.columns:
+            # Melt the DataFrame to convert year columns into rows
+            lng_import_long = pd.melt(
+                lng_import_df,
+                id_vars=['Country/Area'],
+                var_name='Year',
+                value_name='Import_Value'
+            )
+
+            # Ensure the 'Year' column is numeric
+            lng_import_long['Year'] = pd.to_numeric(lng_import_long['Year'], errors='coerce')
+
+            # Create a dropdown to select a country/area
+            selected_country = st.selectbox(
+                "Select a Country/Area to View LNG Import Trends",
+                options=sorted(lng_import_long['Country/Area'].dropna().unique())
+            )
+
+            # Filter the data for the selected country/area
+            country_data = lng_import_long[lng_import_long['Country/Area'] == selected_country]
+
+            # Create a line chart for gas imports by year
+            if not country_data.empty:
+                fig = px.line(
+                    country_data,
+                    x="Year",
+                    y="Import_Value",
+                    title=f"LNG Import Trends for {selected_country}",
+                    labels={"Year": "Year", "Import_Value": "Import Value (in bcf/day)"},
+                    markers=True
+                )
+
+                # Update layout for better visualization
+                fig.update_layout(
+                    title=dict(x=0.5, xanchor="center", font=dict(size=20)),
+                    xaxis=dict(title="Year"),
+                    yaxis=dict(title="Import Value (in bcf/day)"),
+                    height=500
+                )
+
+                # Display the line chart
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning(f"No data available for {selected_country}.")
+        else:
+            st.error("The required column 'Country/Area' is missing in the Excel file.")
+    
+    with tab5:
+        # Reshape the data
+        if 'Country/Area' in lng_export_df.columns:
+            # Melt the DataFrame to convert year columns into rows
+            lng_export_long = pd.melt(
+                lng_export_df,
+                id_vars=['Country/Area'],
+                var_name='Year',
+                value_name='Export_Value'
+            )
+
+            # Ensure the 'Year' column is numeric
+            lng_export_long['Year'] = pd.to_numeric(lng_export_long['Year'], errors='coerce')
+
+            # Create a dropdown to select a country/area
+            selected_country = st.selectbox(
+                "Select a Country/Area to View LNG Export Trends",
+                options=sorted(lng_export_long['Country/Area'].dropna().unique())
+            )
+
+            # Filter the data for the selected country/area
+            country_data = lng_export_long[lng_export_long['Country/Area'] == selected_country]
+
+            # Create a line chart for gas exports by year
+            if not country_data.empty:
+                fig = px.line(
+                    country_data,
+                    x="Year",
+                    y="Export_Value",
+                    title=f"LNG Export Trends for {selected_country}",
+                    labels={"Year": "Year", "Export_Value": "Export Value (in bcf/day)"},
+                    markers=True
+                )
+
+                # Update layout for better visualization
+                fig.update_layout(
+                    title=dict(x=0.5, xanchor="center", font=dict(size=20)),
+                    xaxis=dict(title="Year"),
+                    yaxis=dict(title="Export Value (in bcf/day)"),
+                    height=500
+                )
+
+                # Display the line chart
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning(f"No data available for {selected_country}.")
+        else:
+            st.error("The required column 'Country/Area' is missing in the Excel file.")
+    
+    with tab6:
+        st.header("ℹ️ About Seanalytics")
         
         # Add a container with custom styling for the about us text
         with st.container():
@@ -242,6 +373,7 @@ if data_loaded and buyer_seller_data_loaded:
             
             # Display the Markdown content
             st.markdown(about_us_content, unsafe_allow_html=True)
+
     
 else:
-    st.warning("Please ensure the Excel file 'LNG-Terminals-2024-01 GEM-GGIT-.xlsx' and 'LONG TERM LNG BUYER DEALS.xlsx' are in the same directory as the app.")
+    st.warning("Please ensure the Excel file 'LNG-Terminals-2024-01 GEM-GGIT-.xlsx', 'LONG TERM LNG BUYER DEALS.xlsx', 'Natural_Gas_LNG_Import.xlsx', and 'Natural_Gas_LNG_Export.xlsx' are in the same directory as the app.")
