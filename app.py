@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut
 
 # Set page config
 st.set_page_config(
