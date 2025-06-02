@@ -17,7 +17,7 @@ left_col, right_col = st.columns([4, 1])
 with left_col:
     st.markdown(
         """
-        <h1 style="color: #007BFF; margin: 0;">Sustainable Energy Analytics</h1>
+        <h1 style="color: #007BFF; margin: 0;">RePath Analytics</h1>
         <h2 style="color: #007BFF; margin: 0;">Global LNG Report</h2>
         """,
         unsafe_allow_html=True
